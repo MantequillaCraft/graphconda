@@ -4,5 +4,5 @@ __pycache__/
 examples/
 tests/
 
-.ipynb
-.diff
+*.ipynb
+*.diff
