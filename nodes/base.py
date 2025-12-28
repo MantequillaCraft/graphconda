@@ -1,8 +1,13 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
+# TODO :    
+#   - Agregar manejo de logs en GraphState y en los nodos para registrar eventos importantes.
+#   - NodeTypes faltantes: InputNode, FunctionNode, LoopNode, APINode, etc.
 
-@dataclass(slots=True)
+
+
+@dataclass
 class GraphState:
     """
         GraphState representa el estado global de la ejecución del grafo de nodos.
@@ -13,16 +18,13 @@ class GraphState:
             vars: Diccionario que almacena las variables del programa.
             last: Último valor evaluado o calculado.
             logs: Lista opcional para almacenar mensajes de log o historial de ejecución.
-            halted: Indicador booleano que señala si la ejecución ha sido detenida por algún nodo.
             current_node_id: Identificador del nodo actualmente en ejecución, útil para depuración y seguimiento
         
     """
-    vars: Dict[str, Any] = field(default_factory=dict)      # variables del programa
-    last: Any = None                                        # último valor calculado
-    logs: List[str] = field(default_factory=list)           # opcional
-    halted: bool = False                                    # por si un nodo detiene
-    current_node_id: Optional[str] = None                   # debug/tracking
-
+    vars: Dict[str, Any] = field(default_factory=dict)                          # variables del programa
+    last: Any = None                                                            # último valor calculado
+    current_node_id: Optional[str] = None                                       # debug/tracking
+    time: float = 0.0                                                           # tiempo total de ejecución
 
 @dataclass(slots=True)
 class BaseNode:
@@ -36,6 +38,7 @@ class BaseNode:
     """
     id: str
     next: dict[str, str] | str | None = None
+    node_type: str = None
 
     def execute(self, state: GraphState) -> GraphState:
         state.current_node_id = self.id
