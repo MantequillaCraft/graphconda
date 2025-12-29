@@ -3,6 +3,7 @@ __pycache__/
 
 examples/
 tests/
+logs/
 
 *.ipynb
 *.diff

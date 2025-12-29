@@ -2,6 +2,7 @@ from importlib import import_module
 from typing import Type
 
 # type_str -> "modulo:Clase"
+# para nuevos NodeTypes agregalos aqui (((:
 _NODE_MAP: dict[str, str] = {
     "start": "nodes.handlers.start:StartNode",
     "assign": "nodes.handlers.assign:AssignNode",

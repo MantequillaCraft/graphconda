@@ -1,7 +1,9 @@
 import argparse, json, yaml
+import logging
 
 from pathlib import Path
 
+from utils.logging_config import setup_logging
 from runtime.engine import run_flowchart, build_nodes
 
 
@@ -21,9 +23,9 @@ def load_flowchart(file_path: str) -> dict:
     
     with open(path, 'r') as f:
         if suffix == '.json':
-            return json.load(f)
+            return json.load(f) , path.name.strip(suffix)
         elif suffix in ['.yaml', '.yml']:
-            return yaml.safe_load(f)
+            return yaml.safe_load(f), path.name.strip(suffix)
         else:
             raise ValueError(
                 f"Formato no soportado: '{suffix}'. "
@@ -44,7 +46,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     try:
-        flowchart = load_flowchart(args.file)
+        flowchart, file_name = load_flowchart(args.file)
+        setup_logging(
+            log_level=logging.INFO,  # Cambia a DEBUG para más detalle
+            log_file=f"logs/{file_name}.log"  # Opcional: guarda logs en archivo
+        )
         nodes = build_nodes(flowchart)
         run_flowchart(flowchart, nodes, start_id="0")
     except Exception as e:
