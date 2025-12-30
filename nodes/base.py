@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
-import logging
+import logging, time
 
 LOGGER  = logging.getLogger(__name__)
 
@@ -27,9 +27,9 @@ class GraphState:
     vars: Dict[str, Any] = field(default_factory=dict)                          # variables del programa
     last: Any = None                                                            # último valor calculado
     current_node_id: Optional[str] = None                                       # debug/tracking
-    time: float = 0.0                                                           # tiempo total de ejecución
+    time: float = time.time()                                                   # tiempo total de ejecución
     logs: Tuple[bool, List[str]] = field(default_factory=lambda: (True, []))    # para almacenamiento de logs
-    
+    flow: Dict[str, str] = field(default_factory=dict)                         # flujo de nodos
 
     def log(self, log_lvl: int, log_text: str) -> None:
         """
@@ -59,7 +59,14 @@ class BaseNode:
     next: dict[str, str] | str | None = None
     node_type: str = None
 
-    def execute(self, state: GraphState) -> GraphState:
+    def execute(
+        self,
+        state: GraphState,
+        get_next: bool = True
+    ) -> GraphState:
         state.current_node_id = self.id
         state.log(logging.INFO, f" type=[{self.node_type}]")
+
+        if get_next:
+            self.next = state.flow.get(self.id)
         return state

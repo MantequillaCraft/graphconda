@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 
 from utils.logging_config import setup_logging
-from runtime.engine import run_flowchart, build_nodes
+from runtime.engine import SafeModeExecution
 
 
 # TODO: 
@@ -51,7 +51,6 @@ if __name__ == "__main__":
             log_level=logging.INFO,  # Cambia a DEBUG para más detalle
             log_file=f"logs/{file_name}.log"  # Opcional: guarda logs en archivo
         )
-        nodes = build_nodes(flowchart)
-        run_flowchart(flowchart, nodes, start_id="0")
+        graph_state = SafeModeExecution(flowchart)
     except Exception as e:
         raise SystemExit(f"Error: {e}")

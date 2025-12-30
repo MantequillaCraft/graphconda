@@ -22,8 +22,10 @@ CMP = {
 class DecisionNode(BaseNode):
     condition: str = "x"
 
-    def execute(self, state: GraphState):
+    def execute(self, state: GraphState) -> GraphState:
         try:
+            super().execute(state, get_next=False)
+
             vars = state.vars if state.vars is not None else {}
             self.condition = ast.parse(self.condition, mode="eval").body
 
@@ -48,8 +50,12 @@ class DecisionNode(BaseNode):
                 right = vars[right_node.id]
             else:
                 raise ValueError("Unsupported right side")
+            
+            if CMP[op_type](left, right):
+                self.next = state.flow.get(self.id).get("true")
+            else:
+                self.next = state.flow.get(self.id).get("false")
 
-            super().execute(state)
-            return state , CMP[op_type](left, right)
+            return state
         except Exception as e:
             raise RuntimeError(f"Error in DecisionNode: {e}") from e
