@@ -46,11 +46,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     try:
-        flowchart, file_name = load_flowchart(args.file)
+        flowchart_dict, file_name = load_flowchart(args.file)
         setup_logging(
             log_level=logging.INFO,  # Cambia a DEBUG para más detalle
             log_file=f"logs/{file_name}.log"  # Opcional: guarda logs en archivo
         )
-        graph_state = SafeModeExecution(flowchart)
+        flowchart = SafeModeExecution(flowchart_dict, start_id="0")
+        print(flowchart)
     except Exception as e:
         raise SystemExit(f"Error: {e}")
