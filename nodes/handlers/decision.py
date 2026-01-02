@@ -1,61 +1,30 @@
 import ast
 import operator
-
 from dataclasses import dataclass
 from nodes.base import BaseNode, GraphState
 
-CMP = {
-    ast.Lt: operator.lt,
-    ast.LtE: operator.le,
-    ast.Gt: operator.gt,
-    ast.GtE: operator.ge,
-    ast.Eq: operator.eq,
-    ast.NotEq: operator.ne,
-}
 
-# TODO : 
-#   - Soportar más tipos de datos (strings, floats, etc.)
-#   - Soportar operaciones lógicas AND, OR, NOT
-#   - Manejar errores y excepciones de manera más robusta
-
-@dataclass
+@dataclass(slots = True)
 class DecisionNode(BaseNode):
-    condition: str = "x"
+    condition: str = ""
 
-    def execute(self, state: GraphState) -> GraphState:
+    def execute(self, state: GraphState[str]) -> GraphState:
         try:
-            super().execute(state, get_next=False)
+            12312
+            super()._log(state, 20, f"{__class__.__name__}[id={self.id}] starting ")
+            # Parsea la condición como expresión Python
+            expr = ast.parse(self.condition, mode="eval").body
+            # Evalúa la expresión de forma segura
+            result = bool(self._eval_boolean_expr(expr, state.vars))
 
-            vars = state.vars if state.vars is not None else {}
-            self.condition = ast.parse(self.condition, mode="eval").body
+            # Decide qué rama tomar según el resultado
+            branch = "true" if result else "false"
+            self.next = state.flow.get(self.id, {}).get(branch)
+            super()._log(state, 20, f"{__class__.__name__}[id={self.id}] execution ▶ Next[id={self.next}]")
 
-            if not isinstance(self.condition, ast.Compare):
-                raise ValueError("Only comparisons are supported (e.g. a < 10)")
-
-            if isinstance(self.condition.left, ast.Constant):
-                left = self.condition.left.value
-            elif isinstance(self.condition.left, ast.Name):
-                left = vars[self.condition.left.id]
-            else:
-                raise ValueError("Unsupported left side")
-
-            op_type = type(self.condition.ops[0])
-            if op_type not in CMP:
-                raise ValueError(f"Unsupported operator: {op_type.__name__}")
-
-            right_node = self.condition.comparators[0]
-            if isinstance(right_node, ast.Constant):
-                right = right_node.value
-            elif isinstance(right_node, ast.Name):
-                right = vars[right_node.id]
-            else:
-                raise ValueError("Unsupported right side")
-            
-            if CMP[op_type](left, right):
-                self.next = state.flow.get(self.id).get("true")
-            else:
-                self.next = state.flow.get(self.id).get("false")
-
+            # Guarda el resultado en el estado (opcional)
+            state.last = result
             return state
         except Exception as e:
-            raise RuntimeError(f"Error in DecisionNode: {e}") from e
+            super()._log(state, 40, f"Error in {__class__.__name__}: {e}")
+            raise RuntimeError(f"Error in {__class__.__name__}: {e}") from e
