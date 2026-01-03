@@ -8,10 +8,9 @@ from nodes.base import BaseNode, GraphState
 class DecisionNode(BaseNode):
     condition: str = ""
 
-    def execute(self, state: GraphState[str]) -> GraphState:
+    def execute(self, state: GraphState) -> GraphState:
         try:
-            12312
-            super()._log(state, 20, f"{__class__.__name__}[id={self.id}] starting ")
+            self._log(state, 20, f"{__class__.__name__}[id={self.id}] starting ")
             # Parsea la condición como expresión Python
             expr = ast.parse(self.condition, mode="eval").body
             # Evalúa la expresión de forma segura
@@ -20,7 +19,7 @@ class DecisionNode(BaseNode):
             # Decide qué rama tomar según el resultado
             branch = "true" if result else "false"
             self.next = state.flow.get(self.id, {}).get(branch)
-            super()._log(state, 20, f"{__class__.__name__}[id={self.id}] execution ▶ Next[id={self.next}]")
+            self._log(state, 20, f"{__class__.__name__}[id={self.id}] execution ▶ Next[id={self.next}]")
 
             # Guarda el resultado en el estado (opcional)
             state.last = result
