@@ -118,7 +118,7 @@ class DecisionNode(BaseNode):
 
             raise ValueError("Unsupported call")
 
-        # Bloqueamos acceso a atributos (previene __class__, __dict__, etc.)
+        # Bloqueamos acceso a Attr (previene __class__, __dict__, etc.)
         if isinstance(node, ast.Attribute):
             raise ValueError("Attribute access is not allowed (only method calls on whitelisted types)")
 

@@ -1,36 +1,10 @@
-import argparse, json, yaml
+import argparse
 import logging
 
 from pathlib import Path
 
 from utils.logging_config import setup_logging
-from runtime.engine import SafeModeExecution
-
-
-# TODO: 
-#   - Diferenciacion entre SafeModeExecution y RealTimeExecution
-#   - Configurar el logging para registrar la ejecución del diagrama de flujo
-
-
-def load_flowchart(file_path: str) -> dict:
-    """Carga un flowchart desde JSON o YAML según la extensión."""
-    path = Path(file_path)
-    
-    if not path.exists():
-        raise FileNotFoundError(f"El archivo '{file_path}' no existe")
-    
-    suffix = path.suffix.lower()
-    
-    with open(path, 'r') as f:
-        if suffix == '.json':
-            return json.load(f) , path.name.strip(suffix)
-        elif suffix in ['.yaml', '.yml']:
-            return yaml.safe_load(f), path.name.strip(suffix)
-        else:
-            raise ValueError(
-                f"Formato no soportado: '{suffix}'. "
-                "Usa .json, .yaml o .yml"
-            )
+from runtime.engine import Flowchart
 
 
 if __name__ == "__main__":
@@ -46,12 +20,21 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     try:
-        flowchart_dict, file_name = load_flowchart(args.file)
+        flowchart_dict, file_name = Flowchart.load_flowchart(args.file)
         setup_logging(
-            log_level=logging.INFO,  # Cambia a DEBUG para más detalle
-            log_file=f"logs/{file_name}.log"  # Opcional: guarda logs en archivo
+            log_level=logging.INFO,
+            log_file=f"logs/{file_name}.log"
         )
-        flowchart = SafeModeExecution(flowchart_dict, start_id="0")
-        print(flowchart)
+        flowchart = Flowchart(
+            nodes=flowchart_dict.get('nodes'),
+            metadata=flowchart_dict.get('metadata'),
+            flow=flowchart_dict.get('next'),
+        )
+
+        flowchart.build_nodes()
+
+        result = flowchart.execution()
+
+        print(result)
     except Exception as e:
         raise SystemExit(f"Error: {e}")
