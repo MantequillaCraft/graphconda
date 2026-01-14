@@ -15,23 +15,25 @@ LOGGER = logging.getLogger(__name__)
 # TODO :
 #   - NodeTypes faltantes: InputNode, FunctionNode, LoopNode, APINode, etc.
 
+
 @dataclass(slots=True)
 class Flowchart:
     """
-        Representa un diagrama de flujo listo para ejecutarse.
-        
-        Attr:
-            - `nodes`: definicion cruda (dict) leida desde YAML/JSON.
-            - `metadata`: configuracion extra (por ejemplo delay entre nodos).
-            - `flow`: conexiones entre nodos (next). Puede ser:
-                - "A" -> "B" (lineal)
-                - "A" -> {"true": "B", "false": "C"} (ramificacion)
-                - "A" -> None (fin)
-            
-            En runtime construye:
-            - `node_instances`: instancias reales de nodos (BaseNode y derivados).
-            - `state`: GraphState que guarda variables/tiempo/logs durante la ejecucion.
+    Representa un diagrama de flujo listo para ejecutarse.
+
+    Attr:
+        - `nodes`: definicion cruda (dict) leida desde YAML/JSON.
+        - `metadata`: configuracion extra (por ejemplo delay entre nodos).
+        - `flow`: conexiones entre nodos (next). Puede ser:
+            - "A" -> "B" (lineal)
+            - "A" -> {"true": "B", "false": "C"} (ramificacion)
+            - "A" -> None (fin)
+
+        En runtime construye:
+        - `node_instances`: instancias reales de nodos (BaseNode y derivados).
+        - `state`: GraphState que guarda variables/tiempo/logs durante la ejecucion.
     """
+
     # -------------------- data  --------------------
     nodes: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -40,7 +42,6 @@ class Flowchart:
     # -------------------- runtime --------------------
     node_instances: Dict[str, object] = field(init=False, default_factory=dict)
     state: "GraphState" = field(init=False)
-
 
     def __post_init__(self):
         """
@@ -52,28 +53,26 @@ class Flowchart:
         try:
             self.node_instances = {}
             self.state = GraphState(
-                flow=self.flow,
-                logs_enabled=self.metadata.get('enable_logs')
-                )
+                flow=self.flow, logs_enabled=self.metadata.get("logs_enabled")
+            )
         except Exception as e:
             raise RuntimeError(f"Error initializing Flowchart: {e}") from e
-
 
     @staticmethod
     def load_flowchart(file_path: str) -> dict:
         """
-            Carga un flowchart desde JSON o YAML segun la extension.
-            
-            Args:
-                file_path: Ruta al archivo `.json`, `.yaml` o `.yml`.
-            
-            Returns:
-                tuple[dict, str]: (data, name) donde `data` es el dict cargado y `name`
-                es el nombre del archivo sin extension.
-            
-            Raises:
-                FileNotFoundError: Si el archivo no existe.
-                ValueError: Si el formato no es soportado.
+        Carga un flowchart desde JSON o YAML segun la extension.
+
+        Args:
+            file_path: Ruta al archivo `.json`, `.yaml` o `.yml`.
+
+        Returns:
+            tuple[dict, str]: (data, name) donde `data` es el dict cargado y `name`
+            es el nombre del archivo sin extension.
+
+        Raises:
+            FileNotFoundError: Si el archivo no existe.
+            ValueError: Si el formato no es soportado.
         """
         path = Path(file_path)
 
@@ -89,10 +88,8 @@ class Flowchart:
                 return yaml.safe_load(f), path.stem
             else:
                 raise ValueError(
-                    f"Formato no soportado: '{suffix}'. "
-                    "Usa .json, .yaml o .yml"
+                    f"Formato no soportado: '{suffix}'. Usa .json, .yaml o .yml"
                 )
-
 
     def build_nodes(self):
         """
@@ -108,15 +105,12 @@ class Flowchart:
                 params = node_data.get("params", {})
 
                 self.node_instances[str(node_id)] = NodeCls(
-                    id=str(node_id),
-                    node_type=node_data["type"],
-                    **params
+                    id=str(node_id), node_type=node_data["type"], **params
                 )
 
         except Exception as e:
             LOGGER.error(f"Error during node building: {e}")
             raise RuntimeError(f"Error during node building: {e}") from e
-
 
     def execution(self, start_id: str = "0") -> GraphState:
         """

@@ -11,7 +11,9 @@ _NODE_MAP: dict[str, str] = {
     "output": "nodes.handlers.output:OutputNode",
     "loop": "nodes.handlers.loop:LoopNode",
     "end": "nodes.handlers.end:EndNode",
+    "operation": "nodes.handlers.operation:OperationNode",
 }
+
 
 def get_node_class(type_name: str) -> Type:
     path = _NODE_MAP[type_name]

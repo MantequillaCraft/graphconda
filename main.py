@@ -12,23 +12,18 @@ if __name__ == "__main__":
         description="Ejecuta un diagrama de flujo desde un archivo JSON o YAML"
     )
     parser.add_argument(
-        "file",
-        type=Path,
-        help="Ruta al archivo del flowchart (.json, .yaml, .yml)"
+        "file", type=Path, help="Ruta al archivo del flowchart (.json, .yaml, .yml)"
     )
-    
+
     args = parser.parse_args()
-    
+
     try:
         flowchart_dict, file_name = Flowchart.load_flowchart(args.file)
-        setup_logging(
-            log_level=logging.INFO,
-            log_file=f"logs/{file_name}.log"
-        )
+        setup_logging(log_level=logging.INFO, log_file=f"logs/{file_name}.log")
         flowchart = Flowchart(
-            nodes=flowchart_dict.get('nodes'),
-            metadata=flowchart_dict.get('metadata'),
-            flow=flowchart_dict.get('next'),
+            nodes=flowchart_dict.get("nodes"),
+            metadata=flowchart_dict.get("metadata"),
+            flow=flowchart_dict.get("next"),
         )
 
         flowchart.build_nodes()
