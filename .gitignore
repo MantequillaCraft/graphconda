@@ -1,4 +1,11 @@
 .venv/
+.vscode/
+.idea/
 __pycache__/
 
-.ipynb
+examples/
+tests/
+logs/
+
+*.ipynb
+*.diff
