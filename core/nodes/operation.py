@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from nodes.base import BaseNode, GraphState
+from core.base import BaseNode, GraphState
 import ast
-from nodes.operators.op import (
+from core.helpers.operation import (
     OP,
 )
 

@@ -1,16 +1,17 @@
 import ast
 from dataclasses import dataclass
-from nodes.base import BaseNode, GraphState
+from core.base import BaseNode, GraphState
 
-from nodes.operators.boolean import (
+from core.helpers.decision import (
     CMP,
     BOOL,
     UNARY,
     SAFE_STR_METHODS,
-    SAFE_GLOBAL_FUNCS
+    SAFE_GLOBAL_FUNCS,
 )
 
-@dataclass(slots = True)
+
+@dataclass(slots=True)
 class DecisionNode(BaseNode):
     condition: str = ""
 
@@ -25,7 +26,11 @@ class DecisionNode(BaseNode):
             # Decide qué rama tomar según el resultado
             branch = "true" if result else "false"
             self.next = state.flow.get(self.id, {}).get(branch)
-            self._log(state, 20, f"{__class__.__name__}[id={self.id}] execution ▶ Next[id={self.next}]")
+            self._log(
+                state,
+                20,
+                f"{__class__.__name__}[id={self.id}] execution ▶ Next[id={self.next}]",
+            )
 
             # Guarda el resultado en el estado (opcional)
             state.last = result
@@ -33,7 +38,7 @@ class DecisionNode(BaseNode):
         except Exception as e:
             super()._log(state, 40, f"Error in {__class__.__name__}: {e}")
             raise RuntimeError(f"Error in {__class__.__name__}: {e}") from e
-    
+
     def _eval_boolean_expr(self, node, vars_dict: dict):
         # Constantes: 123, "hola", True, None
         if isinstance(node, ast.Constant):
@@ -54,7 +59,9 @@ class DecisionNode(BaseNode):
             return {self._eval_boolean_expr(e, vars_dict) for e in node.elts}
         if isinstance(node, ast.Dict):
             return {
-                self._eval_boolean_expr(k, vars_dict): self._eval_boolean_expr(v, vars_dict)
+                self._eval_boolean_expr(k, vars_dict): self._eval_boolean_expr(
+                    v, vars_dict
+                )
                 for k, v in zip(node.keys, node.values)
             }
 
@@ -114,12 +121,16 @@ class DecisionNode(BaseNode):
                     args = [self._eval_boolean_expr(a, vars_dict) for a in node.args]
                     return m(*args)
 
-                raise ValueError(f"Method calls not allowed for type: {type(obj).__name__}")
+                raise ValueError(
+                    f"Method calls not allowed for type: {type(obj).__name__}"
+                )
 
             raise ValueError("Unsupported call")
 
         # Bloqueamos acceso a Attr (previene __class__, __dict__, etc.)
         if isinstance(node, ast.Attribute):
-            raise ValueError("Attribute access is not allowed (only method calls on whitelisted types)")
+            raise ValueError(
+                "Attribute access is not allowed (only method calls on whitelisted types)"
+            )
 
         raise ValueError(f"Unsupported expression node: {type(node).__name__}")

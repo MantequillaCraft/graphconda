@@ -30,9 +30,22 @@ UNARY = {
 
 # Métodos seguros para strings
 SAFE_STR_METHODS = {
-    "islower", "isupper", "isdigit", "isalpha", "isalnum", "isspace",
-    "startswith", "endswith", "strip", "lstrip", "rstrip",
-    "lower", "upper", "find", "count", "replace",
+    "islower",
+    "isupper",
+    "isdigit",
+    "isalpha",
+    "isalnum",
+    "isspace",
+    "startswith",
+    "endswith",
+    "strip",
+    "lstrip",
+    "rstrip",
+    "lower",
+    "upper",
+    "find",
+    "count",
+    "replace",
 }
 
 # Funciones globales permitidas

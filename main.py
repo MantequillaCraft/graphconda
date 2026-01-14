@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 
 from utils.logging_config import setup_logging
-from runtime.engine import Flowchart
+from core.engine import Flowchart
 
 
 if __name__ == "__main__":
