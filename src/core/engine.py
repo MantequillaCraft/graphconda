@@ -7,8 +7,9 @@ from dataclasses import dataclass, field
 from typing import Dict, Any
 from pathlib import Path
 
-from core.base import GraphState
-from core.nodes import get_node_class
+from src.core.state import GraphState
+from src.core.nodes import get_node_class
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -102,7 +103,6 @@ class Flowchart:
         try:
             for node_id, node_data in self.nodes.items():
                 NodeCls = get_node_class(node_data["type"])
-                print(node_id)
                 params = node_data.get("params", {})
 
                 self.node_instances[str(node_id)] = NodeCls(

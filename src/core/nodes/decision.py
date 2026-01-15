@@ -1,8 +1,8 @@
 import ast
 from dataclasses import dataclass
-from core.base import BaseNode, GraphState
+from src.core import BaseNode, GraphState
 
-from core.helpers.decision import (
+from src.core.helpers.decision import (
     CMP,
     BOOL,
     UNARY,

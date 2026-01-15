@@ -1,19 +1,17 @@
 from dataclasses import dataclass
-from core.base import BaseNode, GraphState
-from typing import Any
+from src.core import BaseNode, GraphState
 
 
-@dataclass
-class AssignNode(BaseNode):
-    var_name: str = ""
-    value: str = Any
+@dataclass(slots=True)
+class EndNode(BaseNode):
+    label: str = "End"
+
+    def __post_init__(self):
+        self.next = None
 
     def execute(self, state: GraphState) -> GraphState:
         try:
             self._log(state, 20, f"{__class__.__name__}[id={self.id}] starting ")
-            state.current_node_id = self.id
-            state.vars[self.var_name] = self.value
-            super().execute(state)
             self._log(
                 state,
                 20,
@@ -21,4 +19,5 @@ class AssignNode(BaseNode):
             )
             return state
         except Exception as e:
-            raise RuntimeError(f"Error in AssignNode: {e}") from e
+            super()._log(state, 40, f"Error in {__class__.__name__}: {e}")
+            raise RuntimeError(f"Error in {__class__.__name__}: {e}") from e

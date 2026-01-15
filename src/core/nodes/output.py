@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from core.base import BaseNode, GraphState
+from src.core import BaseNode, GraphState
 
 
 @dataclass
