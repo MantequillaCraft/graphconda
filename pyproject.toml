@@ -31,6 +31,7 @@ dependencies = [
     "pydantic==2.12.4",
     "pydantic-core==2.41.5",
     "pygments==2.19.2",
+    "pyside6>=6.10.1",
     "python-dateutil==2.9.0.post0",
     "pyyaml==6.0.3",
     "pyzmq==27.1.0",
