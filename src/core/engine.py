@@ -83,10 +83,11 @@ class Flowchart:
         suffix = path.suffix.lower()
 
         with open(path, "r", encoding="utf-8") as f:
+            filename = path.stem + suffix
             if suffix == ".json":
-                return json.load(f), path.stem
+                return json.load(f), filename
             elif suffix in (".yaml", ".yml"):
-                return yaml.safe_load(f), path.stem
+                return yaml.safe_load(f), filename
             else:
                 raise ValueError(
                     f"Formato no soportado: '{suffix}'. Usa .json, .yaml o .yml"

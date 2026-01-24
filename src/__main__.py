@@ -1,27 +1,31 @@
 import argparse
 import logging
+import sys
 
 from pathlib import Path
+from PySide6.QtWidgets import QApplication
 
 from src.utils import setup_logging
 from src.core import Flowchart
-from src.ui import app
+from src.ui import MainWindow
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Ejecuta un diagrama de flujo desde un archivo JSON o YAML"
     )
-    parser.add_argument(
-        "-v",
-        "--visual",
-        action="store_true"
-    )
+    parser.add_argument("-v", "--visual", action="store_true")
     if not parser.parse_known_args()[0].visual:
         parser.add_argument(
             "file", type=Path, help="Ruta al archivo del flowchart (.json, .yaml, .yml)"
         )
-
+    else:
+        app = QApplication(sys.argv)
+        app.setApplicationName("QuetzalFlowchart")
+        app.setApplicationDisplayName("QuetzalFlowchart")
+        w = MainWindow()
+        w.show()
+        sys.exit(app.exec())
 
     args = parser.parse_args()
 
